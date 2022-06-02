@@ -1,7 +1,28 @@
 import re
+from tkinter import *
+from tkinter import ttk
+
+ventana = Tk()
+ventana.title("Analizador Léxico")
+
+tabla = ttk.Treeview(ventana, columns=("#0","#1"))
+tabla.heading("#0",text="Token",anchor=CENTER)
+tabla.heading("#1",text="Caracter",anchor=CENTER)
+tabla.heading("#2",text="Cantidad",anchor=CENTER)
+
+entradaCadena = Entry(ventana,font=("Arial 72"))
+texto = Label(ventana, font=("Arial 30"), text="Ingresar cadena")
+
+texto.grid(row=0, column=0, columnspan=3, padx=5)
+entradaCadena.grid(row=1, column=0, columnspan=1, padx=5)
+tabla.grid(row=4, column=0,columnspan=2,pady=5)
+
+
 
 
 L = ("([a-z])|([A-Z])")
+Lcont = 0
+Ncont = 0
 LR = ("([a-z])+|([A-Z])+")
 LrCont = 0
 PInt = "int"
@@ -54,15 +75,13 @@ desconocidos = []
 
 
 def PrepararCadena():
-    print("Ingresar cadena:")
-    teclado = input()
+    teclado = entradaCadena.get()
     cadenaLimpia = teclado.split(" ")
-    # print(cadenaLimpia)
     return cadenaLimpia
 
 def Match():
     global PintCont, LrCont, Fcont, PStringCont, PfloatCont, desconocidos, T, Tcont, P, Pcont, AP, APcont, ALG, ALGcont, FP, FPcont, DR, DRcont, Dcont, DIcont, PRIF, PRIFcont, ABRIR, ABRIRcont, CERRAR, CERRARcont
-    global C, Ccont, DATO, DATOcont, PRFOR, PRFORcont, igualador, igualadorCont, operador, operadorCont, INCRcont, INCR, SumaResta,SumaResta2, SumaCont, INCR2
+    global C, Ccont, DATO, DATOcont, PRFOR, PRFORcont, igualador, igualadorCont, operador, operadorCont, INCRcont, INCR, SumaResta,SumaResta2, SumaCont, INCR2, Ncont, Lcont
     evaluar = PrepararCadena()
     for i in range(len(evaluar)):
         if evaluar[i] == PInt:
@@ -101,11 +120,17 @@ def Match():
             SumaCont += 1
 
         var = re.search(LR, evaluar[i])
-        #! Excluir palabras del contador de LR
+        #? Excluir palabras del contador de LR
         if var:
-            LrCont += 1
+            Ncont += 1
             if evaluar[i] == PInt or evaluar[i] == PString or evaluar[i] == PFloat or evaluar[i] == T or evaluar[i] == P or evaluar[i] == ALG or evaluar[i] == PRIF or evaluar[i] == PRFOR:
                 LrCont -= 1
+                Ncont -= 1
+            if len(evaluar[i]) > 1:
+                LrCont += 1
+            else:
+                Lcont += 1
+
         if var == False:
             if evaluar[i] not in PString and evaluar[i] not in PInt and evaluar[i] not in PFloat and evaluar[i] not in F:
                 desconocidos.append(evaluar[i])
@@ -122,16 +147,13 @@ def Match():
             Ccont += 1
         eldato = re.search(DATO, evaluar[i])
         if eldato:
+            DATOcont += 1
             if evaluar[i] == PInt or evaluar[i] == PString or evaluar[i] == PFloat or evaluar[i] == T or evaluar[i] == P or evaluar[i] == ALG or evaluar[i] == PRIF or evaluar[i] == PRFOR:
-                DATOcont += 1
-
-        #checarSuma = re.search(SumaResta, evaluar[i])
-        #if checarSuma:
-           # SumaCont += 1
+                DATOcont -= 1
 
 def RecuentoTokens():
     global PintCont, LrCont, Fcont, desconocidos, Tcont, P, Pcont, AP, APcont, ALG, ALGcont, FP, FPcont, DR, DRcont, Dcont, Dicont, PRIF, PRIFcont, ABRIR, ABRIRcont, CERRAR, CERRARcont
-    global C, Ccont, DATO, DATOcont, PRFOR, PRFORcont, igualador, igualadorCont, operador, operadorCont, INCRcont, INCR, SumaResta, SumaCont
+    global C, Ccont, DATO, DATOcont, PRFOR, PRFORcont, igualador, igualadorCont, operador, operadorCont, INCRcont, INCR, SumaResta, SumaCont, Ncont, Lcont
     print("---------------- RECUENTO DE TOKENS --------------")
     print("PINT:", PintCont)
     print("PFLOAT:", PfloatCont)
@@ -158,9 +180,72 @@ def RecuentoTokens():
     print("INCR:", INCRcont)
     print("SumaResta:", SumaCont)
 
+    tabla.insert("",0,text="L",values=("palabrita",Lcont))
+    tabla.insert("",1,text="LR",values=("palabrita",LrCont))
+    tabla.insert("",2,text="N",values=("palabrita",Ncont))
+    tabla.insert("",3,text="PInt",values=("palabrita",PintCont))
+    tabla.insert("",4,text="PFloat",values=("palabrita",PfloatCont))
+    tabla.insert("",5,text="PString",values=("palabrita",PStringCont))
+    tabla.insert("",6,text="F",values=("palabrita",Fcont))
+    tabla.insert("",7,text="T",values=("palabrita",Tcont))
+    tabla.insert("",9,text="P",values=("palabrita",Pcont))
+    tabla.insert("",10,text="AP",values=("palabrita",APcont))
+    tabla.insert("",11,text="FP",values=("palabrita",FPcont))
+    tabla.insert("",12,text="ALG",values=("palabrita",ALGcont))
+    tabla.insert("",13,text="DR",values=("palabrita",DRcont))
+    tabla.insert("",14,text="D",values=("palabrita",Dcont))
+    tabla.insert("",15,text="DI",values=("palabrita",DIcont))
+    tabla.insert("",16,text="PRIF",values=("palabrita",PRIFcont))
+    tabla.insert("",17,text="ABRIR",values=("palabrita",ABRIRcont))
+    tabla.insert("",18,text="CERRAR",values=("palabrita",CERRARcont))
+    tabla.insert("",19,text="C",values=("palabrita",Ccont))
+    tabla.insert("",20,text="DATO",values=("palabrita",DATOcont))
+    tabla.insert("",21,text="PRFOR",values=("palabrita",PRFORcont))
+    tabla.insert("",22,text="Igualador",values=("palabrita",igualadorCont))
+    tabla.insert("",23,text="Operador",values=("palabrita",operadorCont))
+    tabla.insert("",24,text="INCR",values=("palabrita",INCRcont))
+    tabla.insert("",25,text="SumaResta",values=("palabrita",SumaCont))
+    tabla.insert("",26,text="Desconodidos",values=("palabrita","--"))
+
+
+def ReiniciarContadores():
+    global Lcont, Ncont,LrCont, PintCont, PfloatCont, PStringCont, Fcont, Tcont, Pcont, APcont, FPcont, ALGcont, Dcont, DIcont, DRcont, PRFORcont, PRIFcont, ABRIRcont, CERRARcont, Ccont
+    global igualadorCont, operadorCont, INCRcont, SumaCont
+    Lcont = 0
+    Ncont = 0
+    LrCont = 0
+    PintCont = 0
+    PfloatCont = 0
+    PStringCont = 0
+    Fcont = 0
+    Tcont = 0
+    Pcont = 0
+    APcont = 0
+    FPcont = 0
+    ALGcont = 0
+    Dcont = 0
+    DIcont = 0
+    DRcont = 0
+    PRIFcont = 0
+    ABRIRcont = 0
+    CERRARcont = 0
+    Ccont = 0
+    PRFORcont = 0
+    igualadorCont = 0
+    operadorCont = 0
+    INCRcont = 0
+    SumaCont = 0
+
 def Arrancar():
     Match()
     RecuentoTokens()
+    ReiniciarContadores()
 
+boton_iniciar = Button(ventana, text="Verificar", width=10, height=1, font=("Arial 30"), command = lambda: Arrancar())
 
-Arrancar()
+boton_iniciar.grid(row=3, column=0, columnspan=3)
+
+#tabla.insert("",0,text="L",values=("palabrita",LrCont))
+
+ventana.mainloop()
+#ventanaTabla.mainloop()
