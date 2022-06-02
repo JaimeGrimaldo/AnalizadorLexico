@@ -1,4 +1,4 @@
-# AnalizadorLexico
+# Analizador Lexico
 Repositorio para almacenar los algoritmos de la materia de Compiladores
 
 # PROYECTO
