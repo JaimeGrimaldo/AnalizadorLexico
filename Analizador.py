@@ -6,9 +6,14 @@ ventana = Tk()
 ventana.title("Analizador Léxico")
 
 tabla = ttk.Treeview(ventana, columns=("#0","#1"))
-tabla.heading("#0",text="Token",anchor=CENTER)
+tabla.heading("#0",text="Regla",anchor=CENTER)
 tabla.heading("#1",text="Caracter",anchor=CENTER)
 tabla.heading("#2",text="Cantidad",anchor=CENTER)
+
+tabla2 = ttk.Treeview(ventana, columns=("#0","#1"))
+tabla2.heading("#0",text="Token",anchor=CENTER)
+tabla2.heading("#1",text="Caracter",anchor=CENTER)
+tabla2.heading("#2",text="Cantidad",anchor=CENTER)
 
 entradaCadena = Entry(ventana,font=("Arial 72"))
 texto = Label(ventana, font=("Arial 30"), text="Ingresar cadena")
@@ -16,6 +21,7 @@ texto = Label(ventana, font=("Arial 30"), text="Ingresar cadena")
 texto.grid(row=0, column=0, columnspan=3, padx=5)
 entradaCadena.grid(row=1, column=0, columnspan=1, padx=5)
 tabla.grid(row=4, column=0,columnspan=2,pady=5)
+tabla2.grid(row=5, column=0,columnspan=2,pady=5)
 
 
 
@@ -240,6 +246,7 @@ def Match():
         eldato = re.search(DATO, evaluar[i])
         if eldato:
             DATOcont += 1
+            DATOv.append(evaluar[i])
             if evaluar[i] == PInt or evaluar[i] == PString or evaluar[i] == PFloat or evaluar[i] == T or evaluar[i] == P or evaluar[i] == ALG or evaluar[i] == PRIF or evaluar[i] == PRFOR:
                 DATOcont -= 1
         else:
@@ -305,6 +312,49 @@ def RecuentoTokens():
     tabla.insert("",24,text="INCR",values=(INCRv,INCRcont))
     tabla.insert("",25,text="SumaResta",values=(SumaRestaV,SumaCont))
     tabla.insert("",26,text="Desconodidos",values=(desconocidos,desconocidosCont))
+
+    palabraAuxInt = "".join(PintV)
+    palabraAuxFloat = "".join(PfloatV)
+    palabraAuxString = "".join(PStringV)
+    palabraAuxVoid = "".join(Tv)
+    palabraAuxFor = "".join(PRFORv)
+    palabraAuxIf = "".join(PRIFv)
+    palabraAuxPrint = "".join(ALGv)
+    palabrasReservadas = palabraAuxInt + palabraAuxFloat + palabraAuxString + palabraAuxVoid + palabraAuxFor + palabraAuxIf + palabraAuxPrint
+    contadorReservadas = PintCont + PfloatCont + PStringCont + Tcont + PRFORcont + PRIFcont + ALGcont
+    tiposDato = palabraAuxInt + palabraAuxFloat + palabraAuxString
+    tiposDatoCont = PintCont + PfloatCont + PStringCont
+
+    # ABRIR CERRAR AP FP
+    AbrirAux = "".join(ABRIRv)
+    CerrarAux = "".join(CERRARv)
+    APaux = "".join(APv)
+    FPaux = "".join(FPv)
+    Paux = "".join(Pv)
+    simbolosContador = ABRIRcont + CERRARcont + APcont + FPcont + Pcont
+    simbolos = AbrirAux + CerrarAux + APaux + FPaux + Paux
+
+    operadorAux = "".join(operadorV)
+    CAux = "".join(Cv)
+    condicionales = operadorAux + CAux
+    contadorCondicionales = Ccont + operadorCont
+    tabla2.insert("",0,text="Palabra reservada",values=(palabrasReservadas,contadorReservadas))
+    tabla2.insert("",1,text="Asignación",values=("=",igualadorCont))
+    tabla2.insert("",2,text="Condicionales",values=(condicionales,contadorCondicionales))
+    tabla2.insert("",2,text="Palabra",values=(Nv,Ncont))
+    tabla2.insert("",3,text="Número",values=(Dv,Dcont))
+
+    INCRaux = "".join(INCRv)
+    SumaRaux = "".join(SumaRestaV)
+    incrementosUnidos = INCRaux + SumaRaux
+    contadorIncrementos = INCRcont + SumaCont
+    tabla2.insert("",4,text="Incrementos",values=(incrementosUnidos,contadorIncrementos))
+    tabla2.insert("",5,text="Tipos de datos",values=(tiposDato,tiposDatoCont))
+    tabla2.insert("",6,text="Simbolos",values=(simbolos,simbolosContador))
+    tabla2.insert("",7,text="Terminar",values=(Fv,Fcont))
+
+
+
 
 
 def ReiniciarContadores():
