@@ -2,6 +2,8 @@ import re
 from tkinter import *
 from tkinter import ttk
 
+
+# CORREGIR CADENAS CON _, INTEGRAR COMA Y COMILLAS
 ventana = Tk()
 ventana.title("Analizador Léxico")
 
@@ -15,7 +17,7 @@ tabla2.heading("#0",text="Token",anchor=CENTER)
 tabla2.heading("#1",text="Caracter",anchor=CENTER)
 tabla2.heading("#2",text="Cantidad",anchor=CENTER)
 
-entradaCadena = Entry(ventana,font=("Arial 72"))
+entradaCadena = Entry(ventana,font=("Arial 30")) # ---------------------------------- CAMBIAR TAMAÑO
 texto = Label(ventana, font=("Arial 30"), text="Ingresar cadena")
 
 texto.grid(row=0, column=0, columnspan=3, padx=5)
@@ -63,7 +65,7 @@ CERRAR = ")"
 CERRARcont = 0
 DATO = "([0-9])+|([a-z])+|([A-Z])+"
 DATOcont = 0
-C = "(<)|(>)|(==)|(is not)|(<=)|(>=)"
+C = "(<)|(>)|(==)|(!=)|(<=)|(>=)"
 Ccont = 0
 PRFOR = "for"
 PRFORcont = 0
@@ -212,6 +214,7 @@ def Match():
             if evaluar[i] == PInt or evaluar[i] == PString or evaluar[i] == PFloat or evaluar[i] == T or evaluar[i] == P or evaluar[i] == ALG or evaluar[i] == PRIF or evaluar[i] == PRFOR:
                 LrCont -= 1
                 Ncont -= 1
+
             if evaluar[i] is not PInt or evaluar[i] is not PString or evaluar[i] is not PFloat or evaluar[i] is not T or evaluar[i] is not P or evaluar[i] is not ALG or evaluar[i] is not PRIF or evaluar[i] is not PRFOR:
                 Nv.append(evaluar[i])
             if len(evaluar[i]) > 1:
@@ -220,6 +223,10 @@ def Match():
             else:
                 Lcont += 1
                 Lv.append(evaluar[i])
+            #if evaluar[i] == PInt or evaluar[i] == PString or evaluar[i] == PFloat or evaluar[i] == T or evaluar[i] == P or evaluar[i] == ALG or evaluar[i] == PRIF or evaluar[i] == PRFOR:
+                #for j in range(len(evaluar)-1,-1,-1):
+                    #Nv.pop(j)
+                    #LrV.pop(j)
         else:
             auxDesconocidos += 1
 
@@ -249,6 +256,8 @@ def Match():
             DATOv.append(evaluar[i])
             if evaluar[i] == PInt or evaluar[i] == PString or evaluar[i] == PFloat or evaluar[i] == T or evaluar[i] == P or evaluar[i] == ALG or evaluar[i] == PRIF or evaluar[i] == PRFOR:
                 DATOcont -= 1
+                #for j in range(len(evaluar)-1,-1,-1):
+                   # DATOv.pop(j)
         else:
             auxDesconocidos += 1
 
@@ -311,7 +320,7 @@ def RecuentoTokens():
     tabla.insert("",23,text="Operador",values=(operadorV,operadorCont))
     tabla.insert("",24,text="INCR",values=(INCRv,INCRcont))
     tabla.insert("",25,text="SumaResta",values=(SumaRestaV,SumaCont))
-    tabla.insert("",26,text="Desconodidos",values=(desconocidos,desconocidosCont))
+    
 
     palabraAuxInt = "".join(PintV)
     palabraAuxFloat = "".join(PfloatV)
@@ -352,6 +361,7 @@ def RecuentoTokens():
     tabla2.insert("",5,text="Tipos de datos",values=(tiposDato,tiposDatoCont))
     tabla2.insert("",6,text="Simbolos",values=(simbolos,simbolosContador))
     tabla2.insert("",7,text="Terminar",values=(Fv,Fcont))
+    tabla2.insert("",8,text="Desconodidos",values=(desconocidos,desconocidosCont))
 
 
 
