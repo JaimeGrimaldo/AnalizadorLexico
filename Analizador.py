@@ -271,11 +271,11 @@ def Match():
         contadorAux = 0
         #print("Esto tiene dato",dato)
         for j in range(len(dato)):
-            if dato[j] == '"' or dato[j] == ",":
+            if dato[j] == '"' or dato[j] == "," or dato[j] == "_":
                 #print(dato[j],"Tiene comillas o coma")
-                cadenaV.append(evaluar[i])
+                cadenaV.append(dato[j])
                 cadenaCont += 1
-            if dato[j] is not '"' and dato[j] is not ",":
+            if dato[j] is not '"' and dato[j] is not "," and dato[j] is not "_":
                 contadorAux += 1
             if contadorAux == len(evaluar[i]):
                 auxDesconocidos += 1
