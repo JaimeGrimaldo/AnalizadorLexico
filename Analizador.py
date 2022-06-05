@@ -17,11 +17,11 @@ tabla2.heading("#0",text="Token",anchor=CENTER)
 tabla2.heading("#1",text="Caracter",anchor=CENTER)
 tabla2.heading("#2",text="Cantidad",anchor=CENTER)
 
-entradaCadena = Entry(ventana,font=("Arial 30")) # ---------------------------------- CAMBIAR TAMAÑO
-texto = Label(ventana, font=("Arial 30"), text="Ingresar cadena")
+entradaCadena = Entry(ventana,font=("Arial 15")) # ---------------------------------- CAMBIAR TAMAÑO
+texto = Label(ventana, font=("Impact 30"), text="INGRESAR CADENA")
 
 texto.grid(row=0, column=0, columnspan=3, padx=5)
-entradaCadena.grid(row=1, column=0, columnspan=1, padx=5)
+entradaCadena.grid(row=1, column=0, columnspan=3, padx=5)
 tabla.grid(row=4, column=0,columnspan=2,pady=5)
 tabla2.grid(row=5, column=0,columnspan=2,pady=5)
 
@@ -56,7 +56,7 @@ DI = "([0-9])?"
 DIcont = 0
 DR = "([0-9])+"
 DRcont = 0
-cadena = "(')*([a-z])+|([A-Z])+|([0-9])+"
+cadena = '(")*([a-z])+|([A-Z])+|([0-9]|(,)*)+'
 PRIF = "if"
 PRIFcont = 0
 ABRIR = "("
@@ -82,6 +82,8 @@ SumaCont = 0
 desconocidos = []
 desconocidosCont = 0
 auxDesconocidos = 0
+cadenaCont = 0
+cadenaV = []
 
 PintV = []
 PfloatV = []
@@ -118,7 +120,7 @@ def PrepararCadena():
 def Match():
     global PintCont, LrCont, Fcont, PStringCont, PfloatCont, desconocidos, T, Tcont, P, Pcont, AP, APcont, ALG, ALGcont, FP, FPcont, DR, DRcont, Dcont, DIcont, PRIF, PRIFcont, ABRIR, ABRIRcont, CERRAR, CERRARcont
     global C, Ccont, DATO, DATOcont, PRFOR, PRFORcont, igualador, igualadorCont, operador, operadorCont, INCRcont, INCR, SumaResta,SumaResta2, SumaCont, INCR2, Ncont, Lcont
-    global auxDesconocidos, desconocidosCont
+    global auxDesconocidos, desconocidosCont, comillas, cadenaV, cadenaCont
     evaluar = PrepararCadena()
     for i in range(len(evaluar)):
         if evaluar[i] == PInt:
@@ -223,10 +225,14 @@ def Match():
             else:
                 Lcont += 1
                 Lv.append(evaluar[i])
-            #if evaluar[i] == PInt or evaluar[i] == PString or evaluar[i] == PFloat or evaluar[i] == T or evaluar[i] == P or evaluar[i] == ALG or evaluar[i] == PRIF or evaluar[i] == PRFOR:
-                #for j in range(len(evaluar)-1,-1,-1):
-                    #Nv.pop(j)
-                    #LrV.pop(j)
+            if evaluar[i] == PInt or evaluar[i] == PString or evaluar[i] == PFloat or evaluar[i] == T or evaluar[i] == P or evaluar[i] == ALG or evaluar[i] == PRIF or evaluar[i] == PRFOR:
+
+                if len(Nv) is not 0:
+                    for j in range(len(Nv)-1,-1,-1):
+                        Nv.pop(j)
+                if len(LrV) is not 0:
+                    for j in range(len(LrV)-1,-1,-1):
+                        LrV.pop(j)
         else:
             auxDesconocidos += 1
 
@@ -256,12 +262,25 @@ def Match():
             DATOv.append(evaluar[i])
             if evaluar[i] == PInt or evaluar[i] == PString or evaluar[i] == PFloat or evaluar[i] == T or evaluar[i] == P or evaluar[i] == ALG or evaluar[i] == PRIF or evaluar[i] == PRFOR:
                 DATOcont -= 1
-                #for j in range(len(evaluar)-1,-1,-1):
-                   # DATOv.pop(j)
+                if DATOv:
+                    for j in range(len(DATOv)-1,-1,-1):
+                        DATOv.pop(j)
         else:
             auxDesconocidos += 1
+        dato = evaluar[i]
+        contadorAux = 0
+        #print("Esto tiene dato",dato)
+        for j in range(len(dato)):
+            if dato[j] == '"' or dato[j] == ",":
+                #print(dato[j],"Tiene comillas o coma")
+                cadenaV.append(evaluar[i])
+                cadenaCont += 1
+            if dato[j] is not '"' and dato[j] is not ",":
+                contadorAux += 1
+            if contadorAux == len(evaluar[i]):
+                auxDesconocidos += 1
 
-        if auxDesconocidos >= 21 and evaluar[i] is not "":
+        if auxDesconocidos >= 22 and evaluar[i] is not "":
             desconocidos.append(evaluar[i])
             desconocidosCont += 1
         auxDesconocidos = 0
@@ -269,6 +288,8 @@ def Match():
 def RecuentoTokens():
     global PintCont, LrCont, Fcont, desconocidos, Tcont, P, Pcont, AP, APcont, ALG, ALGcont, FP, FPcont, DR, DRcont, Dcont, Dicont, PRIF, PRIFcont, ABRIR, ABRIRcont, CERRAR, CERRARcont
     global C, Ccont, DATO, DATOcont, PRFOR, PRFORcont, igualador, igualadorCont, operador, operadorCont, INCRcont, INCR, SumaResta, SumaCont, Ncont, Lcont, desconocidosCont
+    global cadenaCont
+    """""
     print("---------------- RECUENTO DE TOKENS --------------")
     print("PINT:", PintCont)
     print("PFLOAT:", PfloatCont)
@@ -294,6 +315,7 @@ def RecuentoTokens():
     print("INCR:", INCRcont)
     print("SumaResta:", SumaCont)
     print("No identificados:", desconocidos,"Cantidad:",desconocidosCont)
+    """""
 
     tabla.insert("",0,text="L",values=(Lv,Lcont))
     tabla.insert("",1,text="LR",values=(LrV,LrCont))
@@ -320,6 +342,7 @@ def RecuentoTokens():
     tabla.insert("",23,text="Operador",values=(operadorV,operadorCont))
     tabla.insert("",24,text="INCR",values=(INCRv,INCRcont))
     tabla.insert("",25,text="SumaResta",values=(SumaRestaV,SumaCont))
+    tabla.insert("",26,text="Cadena",values=(cadenaV,cadenaCont))
     
 
     palabraAuxInt = "".join(PintV)
@@ -334,22 +357,33 @@ def RecuentoTokens():
     tiposDato = palabraAuxInt + palabraAuxFloat + palabraAuxString
     tiposDatoCont = PintCont + PfloatCont + PStringCont
 
-    # ABRIR CERRAR AP FP
     AbrirAux = "".join(ABRIRv)
     CerrarAux = "".join(CERRARv)
     APaux = "".join(APv)
     FPaux = "".join(FPv)
     Paux = "".join(Pv)
-    simbolosContador = ABRIRcont + CERRARcont + APcont + FPcont + Pcont
-    simbolos = AbrirAux + CerrarAux + APaux + FPaux + Paux
+    cadenaAux = "".join(cadenaV)
+    simbolosContador = ABRIRcont + CERRARcont + APcont + FPcont + Pcont + cadenaCont
+    simbolos = AbrirAux + CerrarAux + APaux + FPaux + Paux + cadenaAux
+
+    simbolosFiltro = []
+    for element in simbolos:
+        if element not in simbolosFiltro:
+            simbolosFiltro.append(element)
 
     operadorAux = "".join(operadorV)
     CAux = "".join(Cv)
     condicionales = operadorAux + CAux
     contadorCondicionales = Ccont + operadorCont
+
+    condicionalesFiltro = []
+    for element in condicionales:
+        if element not in condicionalesFiltro:
+            condicionalesFiltro.append(element)
+
     tabla2.insert("",0,text="Palabra reservada",values=(palabrasReservadas,contadorReservadas))
     tabla2.insert("",1,text="Asignación",values=("=",igualadorCont))
-    tabla2.insert("",2,text="Condicionales",values=(condicionales,contadorCondicionales))
+    tabla2.insert("",2,text="Condicionales",values=(condicionalesFiltro,contadorCondicionales))
     tabla2.insert("",2,text="Palabra",values=(Nv,Ncont))
     tabla2.insert("",3,text="Número",values=(Dv,Dcont))
 
@@ -359,7 +393,7 @@ def RecuentoTokens():
     contadorIncrementos = INCRcont + SumaCont
     tabla2.insert("",4,text="Incrementos",values=(incrementosUnidos,contadorIncrementos))
     tabla2.insert("",5,text="Tipos de datos",values=(tiposDato,tiposDatoCont))
-    tabla2.insert("",6,text="Simbolos",values=(simbolos,simbolosContador))
+    tabla2.insert("",6,text="Simbolos",values=(simbolosFiltro,simbolosContador))
     tabla2.insert("",7,text="Terminar",values=(Fv,Fcont))
     tabla2.insert("",8,text="Desconodidos",values=(desconocidos,desconocidosCont))
 
@@ -400,6 +434,6 @@ def Arrancar():
     RecuentoTokens()
     ReiniciarContadores()
 
-boton_iniciar = Button(ventana, text="Verificar", width=10, height=1, font=("Arial 30"), command = lambda: Arrancar())
+boton_iniciar = Button(ventana, text="Verificar", width=10, height=1, font=("Arial 12"), command = lambda: Arrancar())
 boton_iniciar.grid(row=3, column=0, columnspan=3)
 ventana.mainloop()
